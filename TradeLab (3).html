@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a0f14">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="TradeLab">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>TradeLab</title>
+<style>
+:root{color-scheme:dark;--bg:#0a0f14;--card:#141c24;--card2:#1d2832;--tx:#eef3f7;--mu:#8a98a6;--up:#22c7a9;--dn:#f0564f;--ac:#ffd500;--bd:#26323d;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){color-scheme:light;--bg:#f2f5f8;--card:#fff;--card2:#e6ecf1;--tx:#101820;--mu:#5d6b78;--up:#0e9f86;--dn:#d6403a;--ac:#e6b800;--bd:#d3dbe2}}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+#app{max-width:480px;margin:0 auto;height:100%;position:relative;overflow:hidden}
+#view{height:100%;overflow-y:auto;padding:14px 16px 90px}
+h1{font-size:28px;margin:8px 0 14px}h2{font-size:17px;margin:20px 0 10px}
+.card{background:var(--card);border-radius:16px;padding:16px}
+.mu{color:var(--mu)}.up{color:var(--up)}.dn{color:var(--dn)}
+.big{font-size:34px;font-weight:700;margin:8px 0 14px}
+.tag{display:inline-block;background:var(--card2);border-radius:99px;padding:4px 10px;font-size:12px;margin-right:6px;margin-bottom:4px}
+.acts{display:flex;justify-content:space-between}
+.acts div{text-align:center;font-size:12px}
+.acts button{width:54px;height:54px;border-radius:50%;border:0;background:var(--card2);color:var(--tx);font-size:20px;display:block;margin:0 auto 6px;cursor:pointer}
+.acts button.p{background:var(--ac);color:#04110e}
+.row{display:flex;align-items:center;justify-content:space-between;background:var(--card);border-radius:14px;padding:14px;margin-bottom:10px;cursor:pointer}
+.row b{font-size:16px}.row small{display:block;color:var(--mu);margin-top:3px}.r{text-align:right}
+.hs{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px}
+.mini{min-width:130px;background:var(--card);border-radius:14px;padding:14px;text-align:center;cursor:pointer}
+.pill{display:inline-block;border-radius:99px;padding:3px 10px;font-size:13px;margin-top:6px;background:var(--card2)}
+.seg{display:flex;gap:18px;border-bottom:1px solid var(--bd);margin:18px 0 12px}
+.seg span{padding:8px 0;color:var(--mu);cursor:pointer}.seg .on{color:var(--tx);border-bottom:2px solid var(--ac)}
+#bar{position:absolute;left:0;right:0;bottom:0;display:flex;background:var(--card);border-top:1px solid var(--bd);padding-bottom:env(safe-area-inset-bottom,0px)}
+#bar div{flex:1;text-align:center;padding:10px 0 8px;font-size:11px;color:var(--mu);cursor:pointer}
+#bar div i{display:block;font-style:normal;font-size:20px}#bar .on{color:var(--ac)}
+#chart{position:absolute;inset:0;background:var(--bg);z-index:5;display:none;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
+#chart .top{display:flex;justify-content:space-between;align-items:center;padding:12px 16px}
+#chart button.x{background:var(--card2);color:var(--tx);border:0;border-radius:10px;padding:8px 14px;font-size:15px}
+canvas{flex:1;width:100%;min-height:0;touch-action:none}#modal{position:absolute;inset:0;background:#0009;z-index:8;display:none;align-items:flex-end}#modal .sheet{background:var(--card);width:100%;border-radius:20px 20px 0 0;padding:22px 16px calc(22px + env(safe-area-inset-bottom,0px))}
+.trade{padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));background:var(--card)}
+.lots{display:flex;align-items:center;justify-content:center;gap:18px;margin-bottom:10px}
+.lots button{width:38px;height:38px;border-radius:50%;border:0;background:var(--card2);color:var(--tx);font-size:20px}
+.bs{display:flex;gap:10px}
+.bs button{flex:1;border:0;border-radius:12px;padding:12px;color:#fff;font-size:15px;font-weight:600}
+.sell{background:var(--dn)}.buy{background:#2a86ff}
+.pos{background:var(--card);border-radius:14px;padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.pos button{background:var(--card2);color:var(--tx);border:0;border-radius:8px;padding:6px 10px;margin-left:10px}
+.sw{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--bd)}
+.btn{background:var(--ac);color:#04110e;border:0;border-radius:10px;padding:12px 20px;font-weight:600;font-size:15px;cursor:pointer}
+#toast{position:absolute;left:50%;top:60px;transform:translateX(-50%);background:var(--card2);padding:10px 16px;border-radius:10px;font-size:14px;z-index:12;display:none;max-width:90%;box-shadow:0 4px 16px #0006}
+.tfs{display:flex;gap:8px;padding:0 16px 8px}.tfs span{padding:6px 14px;border-radius:99px;background:var(--card2);color:var(--mu);font-size:13px;cursor:pointer}.tfs .on{background:var(--ac);color:#04110e;font-weight:600}
+.tpsl{display:flex;gap:10px;margin-bottom:10px}.tpsl label{flex:1;font-size:12px;color:var(--mu)}.in{width:100%;margin-top:4px;background:var(--card2);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:10px;font-size:15px}
+.pos .ts{display:block;font-size:12px;margin-top:3px}
+.ps{display:flex;justify-content:space-between;align-items:center;background:var(--card);margin:0 12px 8px;padding:10px 14px;border-radius:12px;font-size:14px}
+#auth{position:absolute;inset:0;z-index:7;background:var(--bg);overflow-y:auto;display:none;padding:calc(env(safe-area-inset-top,0px) + 8px) 24px 24px}.aw{max-width:400px;margin:40px auto 0}.aw label{display:block;margin-top:12px;font-size:13px;color:var(--mu)}.aw .btn{width:100%;padding:14px}.lg{width:64px;height:64px;border-radius:18px;background:var(--ac);display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:18px}
+#tc{position:absolute;left:0;right:0;bottom:0;z-index:8;display:none;background:var(--card);border-radius:20px 20px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));box-shadow:0 -6px 24px #0008}
+#pm,#os,#cc,#wl,#imgv{position:absolute;inset:0;background:#0009;z-index:8;display:none;align-items:flex-end}#pm .sheet,#os .sheet,#cc .sheet,#wl .sheet{max-height:92%;overflow-y:auto;background:var(--card);width:100%;border-radius:20px 20px 0 0;padding:22px 16px calc(22px + env(safe-area-inset-bottom,0px))}
+#imgv{z-index:11;align-items:center;justify-content:center;padding:20px;background:#000d}
+.spin{width:18px;height:18px;border:2px solid var(--card2);border-top-color:var(--ac);border-radius:50%;animation:sp .8s linear infinite;display:inline-block;flex:none}@keyframes sp{to{transform:rotate(360deg)}}.pb{height:6px;background:var(--card2);border-radius:9px;overflow:hidden;margin:6px 0 16px}.pb i{display:block;height:100%;background:var(--ac);border-radius:9px;transition:width .9s ease}.ok{width:72px;height:72px;border-radius:50%;background:var(--up);color:#04110e;font-size:38px;display:flex;align-items:center;justify-content:center;margin:8px auto 14px;animation:pop .4s}.ok.bad{background:var(--dn);color:#fff}@keyframes pop{from{transform:scale(.3);opacity:0}}.ls{display:flex;align-items:center;gap:12px;padding:11px 0;font-size:15px}.ls .d{width:18px;height:18px;border-radius:50%;flex:none;text-align:center;font-size:12px;line-height:18px}
+.paybox{background:var(--card2);border-radius:12px;padding:12px;margin:10px 0;border:1px solid var(--bd)}
+.copybtn{background:var(--ac);color:#04110e;border:0;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer}
+.smbtn{border:0;border-radius:8px;padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer}
+.proofcard{background:var(--card2);border-radius:12px;padding:12px;margin-bottom:10px;border:1px solid var(--bd)}
+.thumb{max-width:100%;max-height:130px;border-radius:8px;margin-top:8px;border:1px solid var(--bd);display:block;cursor:pointer}
+</style></head><body>
+<div id="app"><div id="view"></div>
+<div id="bar"></div>
+<div id="chart"><div class="top"><button class="x" onclick="closeChart()">← Back</button><b id="ct"></b><span id="cb" class="mu"></span></div>
+<div id="ps" class="ps"></div><div class="tfs" id="tfs"></div>
+<canvas id="cv"></canvas>
+<div class="trade"><div class="lots"><button onclick="lotAdj(-1)">−</button><b id="lt"></b><button onclick="lotAdj(1)">+</button><span class="mu">lots</span></div>
+<div class="tpsl"><label>Take Profit (TP)<input class="in" id="tp" type="number" step="any" inputmode="decimal" placeholder="Price"></label><label>Stop Loss (SL)<input class="in" id="sl" type="number" step="any" inputmode="decimal" placeholder="Price"></label></div><div id="mg" class="mu" style="text-align:center;font-size:13px;margin-bottom:10px"></div><div class="bs"><button class="sell" id="bsell" onclick="askPos(-1)"></button><span id="spr" class="tag" style="align-self:center;margin:0 -8px;z-index:1;font-size:11px"></span><button class="buy" id="bbuy" onclick="askPos(1)"></button></div>
+<div id="cpos" style="margin-top:10px"></div></div></div>
+<div id="modal" onclick="if(event.target==this)modal(0)"><div class="sheet"><h2 style="margin:0 0 8px;text-align:center">Not Enough Money</h2><p class="mu" style="text-align:center">Margin required for the entered order volume exceeds the available free margin on your account.</p><div style="display:flex;gap:10px;margin-top:18px"><button class="btn" style="flex:1" onclick="dep()">Deposit</button><button class="btn" style="flex:1;background:var(--card2);color:var(--tx)" onclick="modal(0)">Cancel</button></div></div></div><div id="auth"></div><div id="toast"></div><div id="wl" onclick="if(event.target==this)wClose()"><div class="sheet" id="wlb"></div></div><div id="os" onclick="if(event.target==this)osClose()"><div class="sheet"><div class="seg" style="margin:0 0 14px"><span class="on">Market</span><span onclick="toast('Pending orders coming soon')">Pending</span></div><div id="osb"></div><div style="display:flex;gap:10px;margin-top:6px"><button class="btn" style="flex:1;background:var(--card2);color:var(--tx)" onclick="osClose()">Cancel</button><button class="btn" id="cfm" style="flex:2;color:#fff" onclick="osGo()"></button></div></div></div><div id="cc" onclick="if(event.target==this)ccClose()"><div class="sheet"><h2 id="cct" style="margin:0 0 14px;text-align:center"></h2><div id="ccb"></div><button class="btn" style="width:100%;margin-top:14px" onclick="ccGo()">Confirm</button><button class="btn" style="width:100%;margin-top:10px;background:var(--card2);color:var(--tx)" onclick="ccClose()">Cancel</button></div></div><div id="tc"><div id="tcb"></div><div style="display:flex;gap:10px;margin-top:14px"><button class="btn" style="flex:1;background:var(--card2);color:var(--tx)" onclick="tcCancel()">Cancel</button><button class="btn" style="flex:2" onclick="tcOk()">Confirm</button></div></div><div id="pm" onclick="if(event.target==this)pmClose()"><div class="sheet"><h2 id="pmt" style="margin:0 0 12px;text-align:center"></h2><div class="tpsl"><label>Take Profit (TP)<input class="in" id="etp" type="number" step="any" inputmode="decimal" placeholder="None"></label><label>Stop Loss (SL)<input class="in" id="esl" type="number" step="any" inputmode="decimal" placeholder="None"></label></div><div style="display:flex;gap:10px"><button class="btn" style="flex:1" onclick="pmSave()">Save</button><button class="btn" style="flex:1;background:var(--card2);color:var(--tx)" onclick="pmClose()">Cancel</button></div></div></div>
+<div id="imgv" onclick="this.style.display='none'"><div style="text-align:center;max-width:100%"><img id="imgv_el" style="max-width:100%;max-height:80vh;border-radius:12px"><p class="mu" style="margin-top:10px;font-size:13px">Tap anywhere to close</p></div></div>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+const TF={"1m":8,"5m":40,"1h":480},TM={"1m":1,"5m":2.2,"1h":7};
+function gen(p,v){const c=[];let x=p;for(let i=0;i<200;i++){const o=x;x*=1+(Math.random()-.47)*v*2;c.push({o:o,h:Math.max(o,x)*(1+Math.random()*v),l:Math.min(o,x)*(1-Math.random()*v),c:x})}
+const f=p/x;c.forEach(q=>{q.o*=f;q.h*=f;q.l*=f;q.c*=f});return c}
+function mk(k,n,p,d,m,v,s){const C={};for(const t in TF)C[t]=gen(p,v*TM[t]);return{k,n,p,d,m,v,s,o:C["1m"][0].o,C,tf:"1m",t:0,z:50,off:0,get c(){return this.C[this.tf]}}}
+const S=[mk("XAU/USD","Gold vs US Dollar",3645.7,2,100,.0004,.03),mk("BTC/USD","Bitcoin vs US Dollar",60362,2,1,.0012,15),mk("TECH100","US Tech 100 Index",26314.5,1,1,.0006,2),mk("EUR/USD","Euro vs US Dollar",1.09623,5,100000,.0002,.00012),mk("OIL","Crude Oil",80.085,3,1000,.0005,.03),mk("US30","US Wall Street 30 Index",49415,1,10,.0005,3)];
+let tab="acc",cur=null,bal=10000,pos=[],closed=[],lot=.01,pid=1,sub="open",liveOn=false;
+const f=(v,d)=>v.toFixed(d),sg=v=>(v>=0?"+":"")+v.toFixed(2),cl=v=>v>=0?"up":"dn";
+const chg=s=>(s.p/s.o-1)*100;
+const pnl=q=>{const s=S[q.i];return q.dir*((q.dir>0?s.p:s.p+s.s)-q.o)*q.lot*s.m*(q.dir>0?1:1)};
+const float=()=>pos.reduce((a,q)=>a+pnl(q),0);
+function spark(s){const a=s.C["1m"].slice(-30).map(x=>x.c),mn=Math.min(...a),mx=Math.max(...a)||1;const pts=a.map((v,i)=>(i*100/29).toFixed(1)+","+(28-(v-mn)/((mx-mn)||1)*26).toFixed(1)).join(" ");return `<svg width="90" height="30" viewBox="0 0 100 30"><polyline fill="none" stroke="${chg(s)>=0?"var(--up)":"var(--dn)"}" stroke-width="2" points="${pts}"/></svg>`}
+function toast(t){const e=$("#toast");e.textContent=t;e.style.display="block";clearTimeout(toast.h);toast.h=setTimeout(()=>e.style.display="none",2200)}
+function setTab(t){tab=t;render()}
+function bar(){const T=[["acc","▦","Accounts"],["trade","⇅","Trade"],["ins","◎","Insights"],["perf","▥","Performance"],["prof","☺","Profile"]];$("#bar").innerHTML=T.map(x=>`<div class="${tab==x[0]?"on":""}" onclick="setTab('${x[0]}')"><i>${x[1]}</i>${x[2]}</div>`).join("")}
+function tile(i){const s=S[i],c=chg(s);return `<div class="mini" onclick="openChart(${i})"><b>${s.k}</b><div style="margin:8px 0">${f(s.p,s.d)}</div><span class="pill ${cl(c)}">${c>=0?"↑":"↓"} ${Math.abs(c).toFixed(2)}%</span></div>`}
+function listRow(i){const s=S[i],c=chg(s);return `<div class="row" onclick="openChart(${i})"><div><b>${s.k}</b><small>${s.n}</small></div>${spark(s)}<div class="r"><b>${f(s.p,s.d)}</b><small class="${cl(c)}">${c>=0?"↑":"↓"} ${Math.abs(c).toFixed(2)}%</small></div></div>`}
+function posRow(q,x){const s=S[q.i],p=pnl(q);return `<div class="pos"><div><b>${s.k}</b> <span class="${q.dir>0?"up":"dn"}">${q.dir>0?"BUY":"SELL"}</span><small class="mu" style="display:block">${q.lot} lots @ ${f(q.o,s.d)}</small><small class="ts mu">TP ${q.tp!=null?f(q.tp,s.d):"—"} · SL ${q.sl!=null?f(q.sl,s.d):"—"}</small></div><div><b class="${cl(p)}">${sg(p)} USD</b><button onclick="editTS(${q.id})">TP/SL</button><button onclick="askClose(${q.id})">Close order</button></div></div>`}
+function syncLive(sym,np){const s=S.find(x=>x.k==sym);if(!s||!(np>0))return;const ratio=np/s.p;s.p=np;if(!s.liveInit){s.o=np;s.liveInit=true}for(const k in TF){s.C[k].forEach(c=>{c.o*=ratio;c.h*=ratio;c.l*=ratio;c.c*=ratio});const last=s.C[k][s.C[k].length-1];last.c=np;last.h=Math.max(last.h,np);last.l=Math.min(last.l,np)}s.man=false}
+async function fetchLive(){let ok=false;
+try{const r=await fetch("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT");if(r.ok){const d=await r.json();if(+d.price>0){syncLive("BTC/USD",+d.price);ok=true}}}catch(e){}
+try{const r=await fetch("https://api.frankfurter.app/latest?from=EUR&to=USD");if(r.ok){const d=await r.json();if(d.rates&&+d.rates.USD>0){syncLive("EUR/USD",+d.rates.USD);ok=true}}}catch(e){}
+try{const r=await fetch("https://open.er-api.com/v6/latest/USD");if(r.ok){const d=await r.json();if(d.rates&&+d.rates.XAU>0){syncLive("XAU/USD",1/+d.rates.XAU);ok=true}}}catch(e){}
+liveOn=ok;if(cur!=null){draw();upd()}}
+fetchLive();setInterval(fetchLive,10000);
+
+const DEF_PAY={bkash:"01700000000",nagad:"01800000000",usdt:"T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb",pin:"1234",auto:false};
+function getPayCfg(){try{return Object.assign({},DEF_PAY,JSON.parse(localStorage.getItem("tl_pay_cfg")||"{}"))}catch(e){return {...DEF_PAY}}}
+function savePayCfg(c){try{localStorage.setItem("tl_pay_cfg",JSON.stringify(c))}catch(e){}}
+function getReqs(){try{return JSON.parse(localStorage.getItem("tl_pay_reqs")||"[]")}catch(e){return[]}}
+function saveReqs(r){try{localStorage.setItem("tl_pay_reqs",JSON.stringify(r.slice(0,40)))}catch(e){}}
+function copyTxt(txt){if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>toast("Copied: "+txt)).catch(()=>toast("Number: "+txt));else toast("Number: "+txt)}
+function viewImg(src){$("#imgv_el").src=src;$("#imgv").style.display="flex"}
+
+function render(){bar();const v=$("#view");let h="";
+const pCnt=getReqs().filter(r=>r.st=="pending").length;
+if(tab=="acc"){const eq=bal+float();h=`<div class="card" style="margin-top:12px"><b>${mode=="demo"?"Demo":"Real"} account #${mode=="demo"?"100001":"100002"}</b><div style="margin-top:8px"><span class="tag" style="cursor:pointer;${mode=="demo"?"background:var(--ac);color:#04110e":""}" onclick="sw('demo')">Demo</span><span class="tag" style="cursor:pointer;${mode=="real"?"background:var(--ac);color:#04110e":""}" onclick="sw('real')">Real</span><span class="tag" style="cursor:pointer;border:1px solid var(--ac)" onclick="admGate()">⚙ Admin${pCnt?` (${pCnt})`:""}</span><span class="tag">Standard</span>${mode=="real"?`<span class="tag" style="cursor:pointer" onclick="wHist()">History</span>`:""}<span class="tag">${liveOn?"Live feed":"Sim feed"}</span></div><div class="big">${f(eq,2)} USD</div><div class="acts"><div><button class="p" onclick="setTab('trade')">⇅</button>Trade</div><div><button onclick="wOpen('dep')">↓</button>Deposit</div><div><button onclick="wOpen('wd')">↑</button>Withdraw</div><div><button onclick="toast('Demo only: no real money')">⇄</button>Transfer</div></div></div>
+<div class="seg"><span class="${sub=="open"?"on":""}" onclick="sub='open';render()">Open (${pos.length})</span><span class="${sub=="closed"?"on":""}" onclick="sub='closed';render()">Closed (${closed.length})</span></div>`;
+if(sub=="open")h+=pos.length?pos.map(posRow).join(""):`<p class="mu" style="margin-bottom:10px">No open orders. Find your next trade:</p><div class="hs">${[0,1,2].map(tile).join("")}</div>`;
+else h+=closed.length?closed.slice().reverse().map(q=>`<div class="pos"><div><b>${S[q.i].k}</b> <span class="${q.dir>0?"up":"dn"}">${q.dir>0?"BUY":"SELL"}</span><small class="mu" style="display:block">${q.lot} lots${q.r?" · "+q.r:""}</small></div><b class="${cl(q.p)}">${sg(q.p)} USD</b></div>`).join(""):`<p class="mu">No closed trades yet.</p>`}
+else if(tab=="trade")h=`<h1>Trade</h1><div class="tag">${liveOn?"Live + Sim prices":"Most traded"}</div><div style="height:12px"></div>`+S.map((s,i)=>listRow(i)).join("");
+else if(tab=="ins"){const m=S.map((s,i)=>i).sort((a,b)=>Math.abs(chg(S[b]))-Math.abs(chg(S[a])));h=`<h1>Insights</h1><h2>Top movers</h2><div class="hs">${m.map(tile).join("")}</div><h2>Trading signals</h2><div class="card"><b>XAU/USD: bullish while above 3,620</b><p class="mu" style="margin:6px 0">Sample text for the demo only. Not a real signal.</p><span class="pill up">↑ Intraday</span></div><div class="card" style="margin-top:10px"><b>OIL: choppy, range-bound</b><p class="mu" style="margin:6px 0">Sample text for the demo only. Not a real signal.</p><span class="pill dn">↓ Intraday</span></div><h2>Upcoming events</h2><div class="row"><div><b>PL M3 Money Supply YoY</b><small>7:00 PM · in 11 minutes</small></div></div><div class="row"><div><b>US Consumer Confidence</b><small>8:00 PM · in 1 hour</small></div></div>`}
+else if(tab=="perf"){const t=closed.reduce((a,q)=>a+q.p,0),w=closed.filter(q=>q.p>0).length;h=`<h1>Performance</h1>`+(closed.length?`<div class="card"><div class="mu">Total P/L</div><div class="big ${cl(t)}">${sg(t)} USD</div><div class="acts"><div><b>${closed.length}</b><br><span class="mu">Trades</span></div><div><b>${Math.round(w/closed.length*100)}%</b><br><span class="mu">Win rate</span></div><div><b>${w}/${closed.length-w}</b><br><span class="mu">Win/Loss</span></div></div></div>`:`<div class="card" style="text-align:center;padding:40px 16px"><div style="font-size:34px">⚠</div><b>No trading activity found</b><p class="mu" style="margin:8px 0 16px">Close a trade to see stats.</p><button class="btn" onclick="setTab('trade')">Trade</button></div>`)}
+else h=`<h1>Profile</h1><h2>Account</h2><div class="sw"><span>Name</span><span class="mu">${(me||{}).n||""}</span></div><div class="sw"><span>Login</span><span class="mu">${(me||{}).e||""}</span></div><div class="sw"><span>Verification</span><span class="up">Fully verified</span></div><h2>Funding wallet</h2><div class="sw"><span>Balance</span><b>${f(bal,2)} USD</b></div><div style="margin-top:24px"><button class="btn" onclick="bal=mode=='demo'?10000:0;pos=[];closed=[];toast('Account reset');render()">Reset account</button><button class="btn" style="background:var(--card2);color:var(--tx);margin-left:10px" onclick="logout()">Log out</button></div><p class="mu" style="margin-top:20px;font-size:13px">TradeLab Demo is a prototype. Live public price feeds are used where available; no real money is involved.</p>`;
+v.innerHTML=h}
+function openChart(i){cur=i;$("#chart").style.display="flex";$("#ct").textContent=S[i].k;$("#tp").value=$("#sl").value="";tfbar();draw();upd()}
+function closeChart(){if(pend)tcCancel();cur=null;$("#chart").style.display="none";render()}
+function lotAdj(d){lot=Math.max(.01,Math.round((lot+d*.01)*100)/100);upd()}
+function upd(){if(cur==null)return;const s=S[cur];$("#spr").textContent=f(s.s,s.d);const pc=pos.filter(q=>q.i==cur),fl=pc.reduce((a,q)=>a+pnl(q),0);$("#ps").innerHTML=`<span>Open <b>${pc.length}</b></span><span>Pending <b>0</b></span><b class="${cl(fl)}">${sg(fl)} USD</b><span onclick="closeAllCur()" style="cursor:pointer;color:var(--dn);font-size:18px">✕</span>`;$("#cfm").innerHTML="Confirm "+(od>0?"Buy ":"Sell ")+lot.toFixed(2)+" lots<br>"+f(od>0?s.p+s.s:s.p,s.d);$("#lt").textContent=lot.toFixed(2);$("#mg").textContent="Margin: "+f(margin(cur,lot),2)+" USD · Free: "+f(free(),2)+" USD · 1:2000";$("#bsell").innerHTML="Sell<br>"+f(s.p,s.d);$("#bbuy").innerHTML="Buy<br>"+f(s.p+s.s,s.d);const c=chg(s);$("#cb").innerHTML=`<span class="${cl(c)}">${c>=0?"+":""}${c.toFixed(2)}%</span>`+(s.off!=0?`<button class="x" style="margin-left:8px;padding:4px 8px;font-size:12px" onclick="resetView()">Latest</button>`:"");
+$("#cpos").innerHTML=pos.filter(q=>q.i==cur).map(posRow).join("")}
+function readLv(a){const t=String(a).trim();if(t==="")return null;const v=parseFloat(t);return isNaN(v)?NaN:v}
+function chkTS(d,s,tp,sl){if(Number.isNaN(tp)||Number.isNaN(sl))return "Invalid TP/SL";
+if(d>0){if(tp!=null&&tp<=s.p+s.s)return "TP must be above the buy price";if(sl!=null&&sl>=s.p)return "SL must be below the sell price"}
+else{if(tp!=null&&tp>=s.p)return "TP must be below the sell price";if(sl!=null&&sl<=s.p+s.s)return "SL must be above the buy price"}return ""}
+function openPos(d){const s=S[cur],tp=readLv($("#tp").value),sl=readLv($("#sl").value),er=chkTS(d,s,tp,sl);if(er){toast(er);return}if(margin(cur,lot)>free()){modal(1);return}pos.push({id:pid++,i:cur,dir:d,lot,o:d>0?s.p+s.s:s.p,tp,sl});$("#tp").value=$("#sl").value="";toast((d>0?"Bought ":"Sold ")+lot+" lots (demo)");upd()}
+function closePos(id,lv,why){const q=pos.find(x=>x.id==id);if(!q)return;const s=S[q.i];q.p=lv!=null?q.dir*(lv-q.o)*q.lot*s.m:pnl(q);q.r=why||"";bal+=q.p;closed.push(q);pos=pos.filter(x=>x.id!=id);if(cur==null)render();else upd();toast((why?why+" hit · ":"Closed: ")+sg(q.p)+" USD")}
+function draw(){if(cur==null)return;const s=S[cur],cv=$("#cv"),dp=devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;if(!W)return;cv.width=W*dp;cv.height=H*dp;const x=cv.getContext("2d");x.scale(dp,dp);
+const n=s.z,len=s.c.length,en=len-s.off,st0=en-n,cs=[];for(let i=Math.max(0,st0);i<Math.min(len,en);i++)cs.push([i-st0,s.c[i]]);
+let lo,hi;if(!s.man||s.lo==null){const mn=Math.min(...cs.map(a=>a[1].l)),mx=Math.max(...cs.map(a=>a[1].h)),pr=(mx-mn)*.12;lo=mn-pr;hi=mx+pr;s.lo=lo;s.hi=hi}else{lo=s.lo;hi=s.hi}
+s.H=H;const pw=62,cw=(W-pw)/n,Y=v=>H-24-(v-lo)/(hi-lo)*(H-40),st=getComputedStyle(document.documentElement),up=st.getPropertyValue("--up").trim(),dn=st.getPropertyValue("--dn").trim(),mu=st.getPropertyValue("--mu").trim(),bd=st.getPropertyValue("--bd").trim(),cd=st.getPropertyValue("--card").trim(),bg=st.getPropertyValue("--bg").trim(),OR="#ff9f1a",BL="#2a86ff";
+const hA=[],hB=[],dg=s.d>3?4:s.d>1?2:0;
+const tg=(tx,ty,txt,col,fill)=>{x.font="600 11px system-ui";const w=x.measureText(txt).width+14;x.fillStyle=fill;x.strokeStyle=col;x.lineWidth=1;x.beginPath();if(x.roundRect)x.roundRect(tx,ty-10,w,20,5);else x.rect(tx,ty-10,w,20);x.fill();x.stroke();x.fillStyle=col;x.textBaseline="middle";x.textAlign="left";x.fillText(txt,tx+7,ty+1);x.textBaseline="alphabetic";return w};
+x.save();x.beginPath();x.rect(0,0,W-pw,H-24);x.clip();x.font="11px system-ui";
+for(let i=0;i<6;i++){const y=Y(lo+(hi-lo)*i/5);x.strokeStyle=bd;x.beginPath();x.moveTo(0,y);x.lineTo(W-pw,y);x.stroke()}
+cs.forEach(([i,c])=>{const px=i*cw+cw/2,col=c.c>=c.o?up:dn;x.strokeStyle=x.fillStyle=col;x.beginPath();x.moveTo(px,Y(c.h));x.lineTo(px,Y(c.l));x.stroke();const t=Y(Math.max(c.o,c.c));x.fillRect(px-cw*.35,t,cw*.7,Math.max(1,Math.abs(Y(c.o)-Y(c.c))))});
+const ly=Y(s.p);x.setLineDash([3,3]);x.strokeStyle=up;x.beginPath();x.moveTo(0,ly);x.lineTo(W-pw,ly);x.stroke();x.setLineDash([]);
+const axT=[];
+pos.filter(q=>q.i==cur).forEach(q=>{const y=Y(q.o);x.strokeStyle=BL;x.lineWidth=1;x.beginPath();x.moveTo(0,y);x.lineTo(W-pw,y);x.stroke();let bx=6;
+if(q.tp==null){const w=tg(bx,y,"TP",up,cd);hA.push({t:"addtp",id:q.id,x0:bx,x1:bx+w,y0:y-12,y1:y+12});bx+=w+4}
+if(q.sl==null){const w=tg(bx,y,"SL",OR,cd);hA.push({t:"addsl",id:q.id,x0:bx,x1:bx+w,y0:y-12,y1:y+12});bx+=w+4}
+const w0=tg(bx,y,q.lot.toFixed(2)+"  "+sg(pnl(q))+" USD",BL,cd);hA.push({t:"pos",id:q.id,x0:bx,x1:bx+w0,y0:y-12,y1:y+12});axT.push([y,f(q.o,s.d),BL]);
+[["tp",q.tp,up],["sl",q.sl,OR]].forEach(a=>{if(a[1]==null)return;const yy=Y(a[1]);x.setLineDash([6,4]);x.strokeStyle=a[2];x.lineWidth=1.5;x.beginPath();x.moveTo(0,yy);x.lineTo(W-pw,yy);x.stroke();x.setLineDash([]);x.lineWidth=1;const pf=q.dir*(a[1]-q.o)*q.lot*s.m,txt=q.lot.toFixed(2)+"  "+sg(pf)+" USD   ×",w=tg(6,yy,txt,a[2],cd);hA.push({t:"x"+a[0],id:q.id,x0:6+w-22,x1:6+w,y0:yy-12,y1:yy+12});hB.push({t:"l"+a[0],id:q.id,x0:0,x1:W-pw,y0:yy-14,y1:yy+14});axT.push([yy,f(a[1],s.d),a[2]])})});
+x.restore();s.h=hA.concat(hB);
+x.fillStyle=bg;x.fillRect(W-pw,0,pw,H);x.font="11px system-ui";x.textAlign="left";
+for(let i=0;i<6;i++){const v=lo+(hi-lo)*i/5,y=Y(v);if(y<8||y>H-24)continue;x.fillStyle=mu;x.fillText(f(v,dg),W-pw+6,y+4)}
+const lc=Math.min(H-24,Math.max(10,ly));x.fillStyle=up;x.fillRect(W-pw,lc-9,pw,18);x.fillStyle="#04110e";x.fillText(f(s.p,s.d),W-pw+4,lc+4);
+axT.forEach(a=>{const y=Math.min(H-24,Math.max(10,a[0]));x.fillStyle=a[2];x.fillRect(W-pw,y-9,pw,18);x.fillStyle="#fff";x.fillText(a[1],W-pw+4,y+4)})}
+setInterval(()=>{S.forEach(s=>{s.p*=1+(Math.random()-.5)*s.v*1.6;s.t++;for(const k in TF){const a=s.C[k],c=a[a.length-1];c.c=s.p;c.h=Math.max(c.h,s.p);c.l=Math.min(c.l,s.p);if(s.t%TF[k]==0){a.shift();a.push({o:s.p,h:s.p,l:s.p,c:s.p});if(k==s.tf&&s.off>0)s.off=Math.min(s.off+1,a.length-s.z)}}});
+pos.slice().forEach(q=>{const s=S[q.i],bid=s.p,ask=s.p+s.s;if(q.dir>0){if(q.sl!=null&&bid<=q.sl)closePos(q.id,q.sl,"SL");else if(q.tp!=null&&bid>=q.tp)closePos(q.id,q.tp,"TP")}else{if(q.sl!=null&&ask>=q.sl)closePos(q.id,q.sl,"SL");else if(q.tp!=null&&ask<=q.tp)closePos(q.id,q.tp,"TP")}});
+if(ci!=null)ccUp();if(cur!=null){draw();upd()}else if(tab!="prof")render()},1000);
+let mode="demo";const AC={demo:null,real:{bal:0,pos:[],closed:[]}};
+const margin=(i,l)=>l*S[i].m*S[i].p/2000,free=()=>bal+float()-pos.reduce((a,q)=>a+margin(q.i,q.lot),0);
+function modal(on){$("#modal").style.display=on?"flex":"none"}
+function dep(){if(mode=="real"){modal(0);wOpen("dep");return}bal+=1000;modal(0);toast("Demo deposit: +1000 USD (not real money)");render();upd()}
+function sw(m){if(m&&m==mode)return;AC[mode]={bal,pos,closed};mode=mode=="demo"?"real":"demo";({bal,pos,closed}=AC[mode]);render()}
+const cvE=$("#cv"),P={},cp=(v,a,b)=>Math.max(a,Math.min(b,v));let pd=0,pz=50;
+const pdist=()=>{const a=Object.values(P);return a.length>1?Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y):0};
+const fixOff=s=>{s.off=cp(s.off,-Math.round(s.z*.6),s.c.length-s.z)};
+const rel=e=>{const r=cvE.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}};
+const hitAt=(s,px,py)=>{for(const h of s.h||[])if(px>=h.x0&&px<=h.x1&&py>=h.y0&&py<=h.y1)return h;return null};
+let pend=null;
+function startPend(id){const q=pos.find(a=>a.id==id);if(!q)return;if(!pend||pend.id!=id){if(pend)tcCancel();pend={id,tp:q.tp,sl:q.sl}}tcShow()}
+function tcShow(){const q=pend&&pos.find(a=>a.id==pend.id);if(!q){pend=null;$("#tc").style.display="none";return}const s=S[q.i],r=(l,v,c)=>`<div class="sw"><span class="mu">${l}</span><span style="color:${c}">${v!=null?f(v,s.d)+"  ("+sg(q.dir*(v-q.o)*q.lot*s.m)+" USD)":"—"}</span></div>`;$("#tcb").innerHTML=`<b>#${21375000+q.id} · ${q.dir>0?"BUY":"SELL"} ${q.lot} lots @ ${f(q.o,s.d)}</b>`+r("Take Profit",q.tp,"var(--up)")+r("Stop Loss",q.sl,"#ff9f1a");$("#tc").style.display="block"}
+function tcCancel(){if(pend){const q=pos.find(a=>a.id==pend.id);if(q){q.tp=pend.tp;q.sl=pend.sl}}pend=null;$("#tc").style.display="none";if(cur!=null){draw();upd()}else render()}
+function tcOk(){pend=null;$("#tc").style.display="none";toast("TP/SL updated");if(cur!=null){draw();upd()}}
+function resetView(){if(cur==null)return;const s=S[cur];s.man=false;s.off=0;s.z=50;draw();upd()}
+function tapAct(h){const s=S[cur],q=pos.find(a=>a.id==h.id);if(!q)return;
+if(h.t=="pos"){editTS(q.id);return}
+if(h.t=="xtp"){startPend(q.id);q.tp=null}else if(h.t=="xsl"){startPend(q.id);q.sl=null}
+else{const d=s.p*.0015,tpv=+(q.dir>0?s.p+s.s+d:s.p-d).toFixed(s.d),slv=+(q.dir>0?s.p-d:s.p+s.s+d).toFixed(s.d),tp=h.t=="addtp"?tpv:q.tp,sl=h.t=="addsl"?slv:q.sl,er=chkTS(q.dir,s,tp,sl);if(er){toast(er);return}startPend(q.id);q.tp=tp;q.sl=sl}
+draw();upd();if(pend)tcShow()}
+cvE.addEventListener("pointerdown",e=>{cvE.setPointerCapture(e.pointerId);const r=rel(e),s=cur!=null?S[cur]:null,first=Object.keys(P).length==0;let mode="pan",h=null;
+if(s&&first){h=hitAt(s,r.x,r.y);if(h){mode=h.t[0]=="l"?"drag":"tap";if(mode=="drag")startPend(h.id)}else if(r.x>cvE.clientWidth-62)mode="axis"}
+P[e.pointerId]={x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,mode,h,mv:false};if(!first)Object.values(P).forEach(o=>{o.mode="pan";o.h=null});pd=pdist();pz=s?s.z:50});
+cvE.addEventListener("pointermove",e=>{const o=P[e.pointerId];if(!o||cur==null)return;const s=S[cur];if(Math.hypot(e.clientX-o.sx,e.clientY-o.sy)>6)o.mv=true;if(o.mode=="tap"&&o.mv)o.mode="pan";
+if(Object.keys(P).length>1){o.x=e.clientX;o.y=e.clientY;const d=pdist();if(pd>0&&d>0){s.z=cp(Math.round(pz*pd/d),15,150);fixOff(s)}}
+else if(o.mode=="drag"){const r=rel(e),q=pos.find(a=>a.id==o.h.id);if(q){const v=+(s.lo+(s.H-24-r.y)/(s.H-40)*(s.hi-s.lo)).toFixed(s.d),tp=o.h.t=="ltp"?v:q.tp,sl=o.h.t=="lsl"?v:q.sl;if(!chkTS(q.dir,s,tp,sl)){q.tp=tp;q.sl=sl}}}
+else if(o.mode=="axis"){const dy=e.clientY-o.y;o.y=e.clientY;s.man=true;const m=(s.lo+s.hi)/2,r=(s.hi-s.lo)*Math.exp(dy/150);s.lo=m-r/2;s.hi=m+r/2}
+else if(o.mode=="pan"){const cw=(cvE.clientWidth-62)/s.z,k=Math.round((e.clientX-o.x)/cw);if(k){s.off+=k;o.x+=k*cw;fixOff(s)}
+if(o.mv){const dy=e.clientY-o.y;o.y=e.clientY;if(dy){s.man=true;const d=dy/(s.H-40)*(s.hi-s.lo);s.lo+=d;s.hi+=d}}}
+draw();upd();if(pend)tcShow()});
+const up_=e=>{const o=P[e.pointerId];if(o&&o.mode=="drag"&&!o.mv&&pend){const q=pos.find(a=>a.id==pend.id);if(q&&q.tp===pend.tp&&q.sl===pend.sl){pend=null;$("#tc").style.display="none"}}if(o&&o.mode=="tap"&&!o.mv&&cur!=null)tapAct(o.h);delete P[e.pointerId];pd=pdist();pz=cur!=null?S[cur].z:50};
+cvE.addEventListener("pointerup",up_);cvE.addEventListener("pointercancel",e=>{delete P[e.pointerId];pd=pdist()});
+cvE.addEventListener("wheel",e=>{if(cur==null)return;e.preventDefault();const s=S[cur];s.z=cp(Math.round(s.z*(e.deltaY>0?1.1:.9)),15,150);fixOff(s);draw();upd()},{passive:false});
+let pe=null;
+function tfbar(){$("#tfs").innerHTML=Object.keys(TF).map(k=>`<span class="${S[cur].tf==k?"on":""}" onclick="setTF('${k}')">${k}</span>`).join("")+`<span style="margin-left:auto;font-size:18px;padding:4px 12px" onclick="resetView()">⌖</span>`}
+function setTF(k){const s=S[cur];s.tf=k;s.z=50;s.off=0;s.man=false;tfbar();draw();upd()}
+function editTS(id){const q=pos.find(x=>x.id==id);if(!q)return;pe=id;const s=S[q.i];$("#pmt").textContent=s.k+" · "+(q.dir>0?"BUY":"SELL")+" "+q.lot;$("#etp").value=q.tp!=null?q.tp:"";$("#esl").value=q.sl!=null?q.sl:"";$("#pm").style.display="flex"}
+function pmClose(){pe=null;$("#pm").style.display="none"}
+function pmSave(){const q=pos.find(x=>x.id==pe);if(!q){pmClose();return}const s=S[q.i],tp=readLv($("#etp").value),sl=readLv($("#esl").value),er=chkTS(q.dir,s,tp,sl);if(er){toast(er);return}q.tp=tp;q.sl=sl;pmClose();toast("TP/SL updated");if(cur==null)render();else{draw();upd()}}
+addEventListener("resize",draw);
+let od=1,ci=null,me=null,am="in",USERS={};
+{const b=$("#osb");[$(".lots"),$("#mg"),$(".tpsl")].forEach(e=>b.appendChild(e))}
+function askPos(d){od=d;const s=S[cur],er=chkTS(d,s,readLv($("#tp").value),readLv($("#sl").value));if(er){toast(er);return}$("#os").style.display="flex";$("#cfm").style.background=d>0?"#2a86ff":"var(--dn)";upd()}
+function osClose(){$("#os").style.display="none"}
+function osGo(){osClose();openPos(od)}
+function closeAllCur(){pos.filter(q=>q.i==cur).forEach(q=>closePos(q.id))}
+function askClose(id){if(!pos.find(x=>x.id==id))return;ci=id;$("#cct").textContent="Close position #"+(21375000+id);$("#cc").style.display="flex";ccUp()}
+function ccUp(){const q=pos.find(x=>x.id==ci);if(!q){ccClose();return}const s=S[q.i],p=pnl(q),r=(a,b,c)=>`<div class="sw"><span class="mu">${a}</span><span class="${c||""}">${b}</span></div>`;$("#ccb").innerHTML=r("Lots",q.lot)+r("Closing price",f(q.dir>0?s.p:s.p+s.s,s.d))+r(p>=0?"Profit":"Loss",sg(p)+" USD",cl(p))}
+function ccClose(){ci=null;$("#cc").style.display="none"}
+function ccGo(){const id=ci;ccClose();closePos(id)}
+try{USERS=JSON.parse(localStorage.getItem("tl_u")||"{}")}catch(e){}
+async function hs(e,p){try{const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode("tl:"+e+":"+p));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}catch(x){return btoa(unescape(encodeURIComponent(e+p)))}}
+function authView(m){am=m;const su=m=="up";const a=$("#auth");a.style.display="block";a.innerHTML=`<div class="aw"><div class="lg">📈</div><h1>${su?"Create account":"Welcome back"}</h1><p class="mu" style="margin-bottom:10px">${su?"Start with a 10,000 USD demo account. No real money.":"Log in to continue trading."}</p>${su?`<label>Full name<input class="in" id="an" autocomplete="name"></label>`:""}<label>Email<input class="in" id="ae" type="email" autocomplete="email"></label><label>Password<input class="in" id="ap" type="password" autocomplete="${su?"new-password":"current-password"}"></label>${su?`<label>Confirm password<input class="in" id="ac2" type="password" autocomplete="new-password"></label>`:`<div style="text-align:right;margin-top:10px"><span class="mu" style="cursor:pointer" onclick="toast('Demo only: password reset is not available')">Forgot password?</span></div>`}<p class="dn" id="aer" style="min-height:20px;margin:12px 0 6px;font-size:14px"></p><button class="btn" onclick="authGo()">${su?"Sign up":"Log in"}</button><p class="mu" style="text-align:center;margin-top:18px">${su?"Already have an account? ":"New to TradeLab? "}<b style="color:var(--ac);cursor:pointer" onclick="authView('${su?"in":"up"}')">${su?"Log in":"Sign up"}</b></p></div>`}
+async function authGo(){const e=($("#ae").value||"").trim().toLowerCase(),p=$("#ap").value,er=t=>{$("#aer").textContent=t};if(!/^\S+@\S+\.\S+$/.test(e))return er("Enter a valid email address");if(p.length<6)return er("Password must be at least 6 characters");const h=await hs(e,p);
+if(am=="up"){const n=($("#an").value||"").trim();if(!n)return er("Enter your full name");if(p!=$("#ac2").value)return er("Passwords do not match");if(USERS[e])return er("This email is already registered. Log in instead.");USERS[e]={n,h};try{localStorage.setItem("tl_u",JSON.stringify(USERS))}catch(x){}}
+else{const u=USERS[e];if(!u||u.h!=h)return er("Incorrect email or password")}
+me={n:USERS[e].n,e};try{localStorage.setItem("tl_s",e)}catch(x){}$("#auth").style.display="none";tab="acc";render();loadReal();toast(am=="up"?"Account created. Welcome!":"Welcome back, "+me.n)}
+
+const sleep=t=>new Promise(r=>setTimeout(r,t)),AMT=[100,500,1000,5000],MT=[["bkash","🩷","bKash","Send Money / Cash Out (Simulated)"],["nagad","🧡","Nagad","Send Money / Cash Out (Simulated)"],["usdt","🪙","USDT (TRC20)","Crypto Transfer (Simulated)"]];
+let RTX=[],W=null,lastB=null,admUnlocked=false,admTab="req";
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const rk=e=>"tl_r_"+e;
+
+async function rSave(){if(!me)return;const e=me.e,o={bal:mode=="real"?bal:AC.real.bal,tx:RTX.slice(0,50)};try{localStorage.setItem(rk(e),JSON.stringify(o))}catch(x){}}
+async function loadReal(){if(!me)return;const e=me.e;let o=null;try{o=JSON.parse(localStorage.getItem(rk(e))||"null")}catch(x){}if(o&&me&&me.e==e){AC.real.bal=+o.bal||0;RTX=Array.isArray(o.tx)?o.tx:[];if(mode=="real")bal=AC.real.bal;lastB=bal;if(tab=="acc"&&cur==null)render()}}
+setInterval(()=>{if(me&&mode=="real"&&bal!==lastB){lastB=bal;rSave()}},4000);
+
+const wb=h=>{$("#wlb").innerHTML=h;$("#wl").style.display="flex"},mx=()=>Math.max(0,Math.floor(Math.min(free(),bal)*100)/100),mn=id=>MT.find(m=>m[0]==id)[2];
+function wOpen(k){if(mode!="real"){if(k=="dep")dep();else toast("Withdraw works on the Real account. Tap the Real tag to switch.");return}W={k,st:1,a:"",m:null,trx:"",img:"",acc:""};wGo(1)}
+function wClose(){if(W&&W.busy)return;W=null;$("#wl").style.display="none";render()}
+
+function admGate(){
+  if(admUnlocked){admOpen();return}
+  W={k:"gate"};
+  wb(`<span class="tag" style="margin:0 0 10px">ADMIN ACCESS</span>
+  <h2 style="margin:0 0 8px">Enter Admin PIN</h2>
+  <p class="mu" style="font-size:13px;margin-bottom:12px">Default PIN is <b>1234</b> (you can change it inside Admin Panel).</p>
+  <input class="in" id="admpin" type="password" inputmode="numeric" placeholder="Enter PIN">
+  <div style="display:flex;gap:10px;margin-top:16px">
+    <button class="btn" style="flex:1;background:var(--card2);color:var(--tx)" onclick="wClose()">Cancel</button>
+    <button class="btn" style="flex:2" onclick="chkAdmPin()">Unlock Admin</button>
+  </div>`);
+}
+function chkAdmPin(){
+  const cfg=getPayCfg(),v=($("#admpin").value||"").trim();
+  if(v===cfg.pin){admUnlocked=true;admOpen()}
+  else toast("Wrong Admin PIN");
+}
+
+function admOpen(){
+  W={k:"a"};
+  const cfg=getPayCfg(),reqs=getReqs();
+  const pendReqs=reqs.filter(r=>r.st=="pending");
+  let body=`<span class="tag" style="margin:0 0 10px">SIMULATED · Admin Control</span>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+    <h2 style="margin:0">Admin Panel</h2>
+    <span class="tag" style="cursor:pointer" onclick="admUnlocked=false;wClose()">Lock 🔒</span>
+  </div>
+  <div class="seg" style="margin:6px 0 14px">
+    <span class="${admTab=='req'?'on':''}" onclick="admTab='req';admOpen()">Requests (${pendReqs.length})</span>
+    <span class="${admTab=='pay'?'on':''}" onclick="admTab='pay';admOpen()">Payment Numbers</span>
+    <span class="${admTab=='usr'?'on':''}" onclick="admTab='usr';admOpen()">Users</span>
+  </div>`;
+
+  if(admTab=="pay"){
+    body+=`<label class="mu" style="font-size:13px">🩷 bKash Number</label>
+    <input class="in" id="cfg_bkash" value="${esc(cfg.bkash)}" placeholder="017XXXXXXXX" style="margin-bottom:10px">
+    <label class="mu" style="font-size:13px">🧡 Nagad Number</label>
+    <input class="in" id="cfg_nagad" value="${esc(cfg.nagad)}" placeholder="018XXXXXXXX" style="margin-bottom:10px">
+    <label class="mu" style="font-size:13px">🪙 USDT (TRC20) Address</label>
+    <input class="in" id="cfg_usdt" value="${esc(cfg.usdt)}" placeholder="TRC20 Wallet Address" style="margin-bottom:10px">
+    <label class="mu" style="font-size:13px">🔑 Admin PIN</label>
+    <input class="in" id="cfg_pin" value="${esc(cfg.pin)}" placeholder="1234" style="margin-bottom:12px">
+    <label style="display:flex;align-items:center;gap:8px;font-size:13px;margin-bottom:14px;cursor:pointer">
+      <input type="checkbox" id="cfg_auto" ${cfg.auto?"checked":""}> Auto-approve deposits immediately (skip manual check)
+    </label>
+    <button class="btn" style="width:100%" onclick="saveAdmPay()">Save Payment Settings</button>`;
+  } else if(admTab=="req"){
+    if(!reqs.length){
+      body+=`<p class="mu" style="text-align:center;padding:24px 0">No deposit requests yet.</p>`;
+    } else {
+      body+=reqs.map(r=>`<div class="proofcard">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <b>${esc(r.un||r.ue)}</b>
+          <span class="tag" style="margin:0;background:${r.st=='approved'?'var(--up)':r.st=='rejected'?'var(--dn)':'var(--ac)'};color:${r.st=='rejected'?'#fff':'#04110e'}">${r.st.toUpperCase()}</span>
+        </div>
+        <small class="mu" style="display:block;margin-top:4px">${esc(r.ue)} · ${new Date(r.t).toLocaleString()}</small>
+        <div style="margin-top:8px;font-size:14px">
+          <b>${(+r.a).toFixed(2)} USD</b> via <b>${esc(mn(r.m))}</b><br>
+          <span class="mu">TrxID:</span> <b style="color:var(--ac);user-select:all">${esc(r.trx||"N/A")}</b>
+        </div>
+        ${r.img?`<img src="${r.img}" class="thumb" onclick="viewImg(this.src)" title="Tap to zoom">`:`<small class="mu" style="display:block;margin-top:6px">No screenshot uploaded</small>`}
+        ${r.st=="pending"?`<div style="display:flex;gap:8px;margin-top:10px">
+          <button class="smbtn" style="flex:1;background:var(--up);color:#04110e" onclick="actReq('${r.id}','approved')">✓ Approve (+$${(+r.a).toFixed(0)})</button>
+          <button class="smbtn" style="flex:1;background:var(--dn);color:#fff" onclick="actReq('${r.id}','rejected')">✕ Reject</button>
+        </div>`:""}
+      </div>`).join("");
+    }
+  } else {
+    const uList=Object.entries(USERS);
+    body+=uList.length?uList.map(([em,u])=>{
+      let ub=0;try{const d=JSON.parse(localStorage.getItem(rk(em))||"null");if(d)ub=+d.bal||0}catch(e){}
+      return `<div class="sw"><div><b>${esc(u.n)}</b><small class="mu" style="display:block">${esc(em)}</small></div><b>${ub.toFixed(2)} USD</b></div>`;
+    }).join(""):`<p class="mu">No registered users.</p>`;
+  }
+
+  body+=`<button class="btn" style="width:100%;margin-top:14px;background:var(--card2);color:var(--tx)" onclick="wClose()">Close</button>`;
+  wb(body);
+}
+
+function saveAdmPay(){
+  const c={
+    bkash:($("#cfg_bkash").value||"").trim(),
+    nagad:($("#cfg_nagad").value||"").trim(),
+    usdt:($("#cfg_usdt").value||"").trim(),
+    pin:($("#cfg_pin").value||"1234").trim()||"1234",
+    auto:$("#cfg_auto").checked
+  };
+  savePayCfg(c);
+  toast("Payment numbers & settings saved!");
+  admOpen();
+}
+
+function actReq(id,status){
+  const reqs=getReqs(),r=reqs.find(x=>x.id==id);
+  if(!r||r.st!="pending")return;
+  r.st=status;
+  saveReqs(reqs);
+  if(status=="approved"){
+    let uData={bal:0,tx:[]};
+    try{const d=JSON.parse(localStorage.getItem(rk(r.ue))||"null");if(d)uData=d}catch(e){}
+    uData.bal=(+uData.bal||0)+(+r.a);
+    uData.tx=Array.isArray(uData.tx)?uData.tx:[];
+    uData.tx.unshift({id:r.id,k:"dep",a:+r.a,m:r.m,trx:r.trx,t:Date.now()});
+    try{localStorage.setItem(rk(r.ue),JSON.stringify(uData))}catch(e){}
+    if(me&&me.e==r.ue){
+      AC.real.bal=uData.bal;
+      RTX=uData.tx;
+      if(mode=="real"){bal=uData.bal;lastB=bal}
+    }
+    toast("Approved! +"+(+r.a).toFixed(2)+" USD added.");
+  } else {
+    toast("Request rejected.");
+  }
+  admOpen();
+}
+
+function wHist(){W={k:"h"};wDraw()}
+async function wGo(n){const w=W;wb(`<div style="text-align:center;padding:56px 0"><span class="spin" style="width:32px;height:32px;border-width:3px"></span></div>`);await sleep(300);if(W!==w)return;w.st=n;wDraw()}
+const stp=n=>`<div style="display:flex;gap:6px;margin:0 0 6px">${[1,2,3,4].map(i=>`<i style="flex:1;height:4px;border-radius:9px;background:${i<=n?"var(--ac)":"var(--card2)"}"></i>`).join("")}</div><div class="mu" style="font-size:12px;margin-bottom:12px">Step ${n} of 4</div>`;
+function wQ(v){$("#wa").value=W.k=="dep"?v:(Math.floor(mx()*v)/100).toFixed(2)}
+function wS1(){const a=+$("#wa").value;if(!(a>0))return toast("Enter an amount");if(a<10)return toast("Minimum is 10 USD");if(W.k=="dep"&&a>50000)return toast("Max 50,000 USD per deposit");if(W.k=="wd"&&a>mx())return toast("Exceeds available balance");W.a=a;wGo(2)}
+
+function handleProofFile(inp){
+  const file=inp.files&&inp.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const img=new Image();
+    img.onload=()=>{
+      const c=document.createElement("canvas"),maxW=600,sc=Math.min(1,maxW/img.width);
+      c.width=img.width*sc;c.height=img.height*sc;
+      c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+      W.img=c.toDataURL("image/jpeg",0.7);
+      wDraw();
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function wS3Go(){
+  if(W.k=="dep"){
+    const trx=($("#wtrx").value||"").trim();
+    if(!trx)return toast("Please enter Transaction ID (TrxID)");
+    if(!W.img)return toast("Please upload payment screenshot");
+    W.trx=trx;
+  } else {
+    const acc=($("#wacc").value||"").trim();
+    if(!acc)return toast("Enter your receiving account number");
+    W.acc=acc;
+  }
+  wRun();
+}
+
+function wDraw(){
+  const w=W,d=w.k=="dep",T=d?"Deposit":"Withdraw",sim=`<span class="tag" style="margin:0 0 10px">SIMULATED · no real money moves</span>`,nx=(l,fn)=>`<div style="display:flex;gap:10px;margin-top:16px"><button class="btn" style="flex:1;background:var(--card2);color:var(--tx)" onclick="${w.st>1?"wGo("+(w.st-1)+")":"wClose()"}">${w.st>1?"Back":"Cancel"}</button><button class="btn" style="flex:2" onclick="${fn}">${l}</button></div>`,r=(a,b)=>`<div class="sw"><span class="mu">${a}</span><b>${b}</b></div>`;
+  const cfg=getPayCfg(),myReqs=getReqs().filter(x=>me&&x.ue==me.e);
+
+  if(w.k=="h"){
+    wb(`<h2 style="margin:0 0 12px;text-align:center">Transactions & Requests</h2>`
+    +(myReqs.length?`<div class="mu" style="font-size:12px;margin-bottom:6px">Deposit Requests</div>`+myReqs.map(t=>`<div class="sw"><div><b>Deposit (${esc(mn(t.m))})</b> <span class="tag" style="font-size:10px;padding:2px 7px">${t.st}</span><small class="mu" style="display:block">TrxID: ${esc(t.trx)} · ${new Date(t.t).toLocaleString()}</small></div><b class="up">+${(+t.a).toFixed(2)} USD</b></div>`).join(""):"")
+    +(RTX.length?`<div class="mu" style="font-size:12px;margin:10px 0 6px">Completed History</div>`+RTX.slice(0,20).map(t=>`<div class="sw"><div><b>${t.k=="dep"?"Deposit":"Withdrawal"}</b><small class="mu" style="display:block">${new Date(t.t).toLocaleString()} · ${t.id}</small></div><b class="${t.k=="dep"?"up":"dn"}">${t.k=="dep"?"+":"−"}${t.a.toFixed(2)} USD</b></div>`).join(""):"")
+    +(!myReqs.length&&!RTX.length?`<p class="mu" style="text-align:center">No transactions yet.</p>`:"")
+    +`<button class="btn" style="width:100%;margin-top:14px" onclick="wClose()">Close</button>`);
+    return;
+  }
+
+  if(w.st==1)wb(sim+`<h2 style="margin:0 0 4px">${T}</h2>`+stp(1)+`<label class="mu" style="font-size:13px">Amount (USD)</label><input class="in" id="wa" type="number" step="any" inputmode="decimal" placeholder="0.00" value="${w.a}">`+(d?"":`<p class="mu" style="font-size:12px;margin-top:6px">Available: ${mx().toFixed(2)} USD</p>`)+`<div class="hs" style="margin-top:10px">${(d?AMT:[25,50,75,100]).map(v=>`<span class="tag" style="cursor:pointer;white-space:nowrap" onclick="wQ(${v})">${d?"$"+v:v+"%"}</span>`).join("")}</div>`+nx("Continue","wS1()"));
+  else if(w.st==2)wb(sim+`<h2 style="margin:0 0 4px">${d?"Pay with":"Send to"}</h2>`+stp(2)+MT.map(m=>`<div class="row" style="${w.m==m[0]?"outline:2px solid var(--ac)":""}" onclick="W.m='${m[0]}';wDraw()"><div><b>${m[1]} ${m[2]}</b><small>${m[3]}</small></div></div>`).join("")+nx("Continue","W.m?wGo(3):toast('Choose a method')"));
+  else if(w.st==3){
+    if(d){
+      const payNum=cfg[w.m]||"Not set by Admin";
+      wb(sim+`<h2 style="margin:0 0 4px">Send Payment & Proof</h2>`+stp(3)
+      +`<div class="paybox">
+          <div class="mu" style="font-size:12px">Send <b>${w.a.toFixed(2)} USD</b> to this <b>${mn(w.m)}</b> number:</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;gap:8px">
+            <b style="font-size:15px;word-break:break-all;color:var(--ac)">${esc(payNum)}</b>
+            <button class="copybtn" onclick="copyTxt('${esc(payNum)}')">Copy</button>
+          </div>
+        </div>
+        <label class="mu" style="font-size:13px;display:block;margin-top:8px">Transaction ID (TrxID) *</label>
+        <input class="in" id="wtrx" placeholder="e.g. 9H7K2L8P" value="${esc(w.trx)}" oninput="W.trx=this.value">
+        <label class="mu" style="font-size:13px;display:block;margin-top:10px">Payment Screenshot *</label>
+        <input class="in" type="file" accept="image/*" onchange="handleProofFile(this)" style="padding:8px;font-size:13px">
+        ${w.img?`<img src="${w.img}" class="thumb" onclick="viewImg(this.src)">`:""}`
+      +nx("Submit Deposit","wS3Go()"));
+    } else {
+      wb(sim+`<h2 style="margin:0 0 4px">Review Withdrawal</h2>`+stp(3)+r("Type",T)+r("Amount",w.a.toFixed(2)+" USD")+r("Method",mn(w.m))+r("Fee","0.00 USD")
+      +`<label class="mu" style="font-size:13px;display:block;margin-top:10px">Your ${mn(w.m)} Number / Address *</label>
+        <input class="in" id="wacc" placeholder="Enter receiving account" value="${esc(w.acc)}" oninput="W.acc=this.value">`
+      +nx("Confirm Withdraw","wS3Go()"));
+    }
+  }
+}
+
+async function wRun(){
+  const w=W,d=w.k=="dep",L=d?["Verifying TrxID format","Uploading payment screenshot","Submitting to Admin Panel","Finalizing request"]:["Checking free margin","Security check","Sending to "+mn(w.m),"Updating your balance"];
+  w.busy=1;
+  for(let i=0;i<4;i++){
+    wb(`<h2 style="margin:0 0 4px">Processing…</h2>`+stp(4)+`<div class="pb"><i style="width:${i*25}%"></i></div>`+L.map((t,j)=>`<div class="ls"><span class="${j==i?"spin":"d"}" style="${j<i?"background:var(--up);color:#04110e":j>i?"background:var(--card2)":""}">${j<i?"✓":""}</span><span class="${j>i?"mu":""}">${t}</span></div>`).join(""));
+    await sleep(30);const pi=$(".pb i");if(pi)pi.style.width=(i+1)*25+"%";await sleep(600+Math.random()*300);if(W!==w)return;
+    if(!d&&i==0&&w.a>mx()){w.busy=0;wb(`<div class="ok bad">✕</div><h2 style="text-align:center">Withdrawal failed</h2><p class="mu" style="text-align:center">Free margin changed. Available: ${mx().toFixed(2)} USD.</p><button class="btn" style="width:100%;margin-top:16px" onclick="wClose()">Close</button>`);return}
+  }
+  const id="TX"+Date.now().toString(36).toUpperCase();
+  w.busy=0;
+  if(d){
+    const cfg=getPayCfg(),reqs=getReqs();
+    const st=cfg.auto?"approved":"pending";
+    reqs.unshift({id,ue:me.e,un:me.n,a:w.a,m:w.m,trx:w.trx,img:w.img,st,t:Date.now()});
+    saveReqs(reqs);
+    if(cfg.auto){
+      bal+=w.a;RTX.unshift({id,k:"dep",a:w.a,m:w.m,trx:w.trx,t:Date.now()});lastB=bal;rSave();
+      wb(`<div class="ok">✓</div><h2 style="text-align:center">Deposit Approved</h2><p class="mu" style="text-align:center;margin:6px 0">${w.a.toFixed(2)} USD added · TrxID: ${esc(w.trx)}<br>Ref ${id}</p><button class="btn" style="width:100%;margin-top:16px" onclick="wClose()">Done</button>`);
+    } else {
+      wb(`<div class="ok" style="background:var(--ac)">⏳</div><h2 style="text-align:center">Deposit Submitted</h2><p class="mu" style="text-align:center;margin:6px 0">${w.a.toFixed(2)} USD · ${mn(w.m)}<br>TrxID: <b>${esc(w.trx)}</b> · Ref ${id}<br><span style="font-size:12px">Waiting for Admin approval in Admin Panel.</span></p><button class="btn" style="width:100%;margin-top:16px" onclick="wClose()">Done</button>`);
+    }
+  } else {
+    bal-=w.a;RTX.unshift({id,k:w.k,a:w.a,m:w.m,t:Date.now()});lastB=bal;rSave();
+    wb(`<div class="ok">✓</div><h2 style="text-align:center">Withdrawal successful</h2><p class="mu" style="text-align:center;margin:6px 0">${w.a.toFixed(2)} USD · ${mn(w.m)}<br>Ref ${id}</p><button class="btn" style="width:100%;margin-top:16px" onclick="wClose()">Done</button>`);
+  }
+  if(cur==null)render();else upd();
+}
+function logout(){if(me&&mode=="real")rSave();try{localStorage.removeItem("tl_s")}catch(x){}if(cur!=null)closeChart();me=null;mode="demo";pos=[];closed=[];bal=10000;AC.real={bal:0,pos:[],closed:[]};RTX=[];W=null;admUnlocked=false;$("#wl").style.display="none";authView("in")}
+render();
+{let s0=null;try{s0=localStorage.getItem("tl_s")}catch(e){}if(s0&&USERS[s0]){me={n:USERS[s0].n,e:s0};loadReal()}else authView("in")}
+</script></body></html>
